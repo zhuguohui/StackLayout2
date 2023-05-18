@@ -21,32 +21,30 @@
         <View
             android:layout_width="200dp"
             android:layout_height="300dp"
-            android:layout_gravity="center"
-            android:translationZ="5dp"
-            android:translationX="30dp"
-            android:scaleX="0.9"
-            android:scaleY="0.9"
+            android:background="#000" />
+
+        <View
+            android:layout_width="200dp"
+            android:layout_height="300dp"
             android:background="#f00" />
 
         <View
             android:layout_width="200dp"
             android:layout_height="300dp"
-            android:layout_gravity="center"
             android:background="#0f0"
-            android:translationZ="10dp"
-            android:translationX="15dp"
-            android:scaleX="0.95"
-            android:scaleY="0.95"
+            />
 
-
-           />
-
-        <View
-            android:translationZ="15dp"
+        <RelativeLayout
             android:layout_width="200dp"
             android:layout_height="300dp"
-            android:layout_gravity="center"
-            android:background="#00f" />
+            android:background="#00f" >
+            <Button
+                android:layout_centerInParent="true"
+                android:id="@+id/btn_like"
+                android:text="点赞"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
     </com.zhuguohui.myapplication.StackLayout>
 
 </RelativeLayout>
