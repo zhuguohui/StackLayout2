@@ -12,7 +12,11 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.zhuguohui.myapplication.TRSAction;
 import com.zhuguohui.myapplication.TRSFunction4;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by zhuguohui
@@ -23,13 +27,72 @@ import com.zhuguohui.myapplication.TRSFunction4;
 public class StackLayout extends FrameLayout {
 
     private ItemTouchListener onItemTouchListener;
+    private List<View> removeViews = new ArrayList<>();
 
     public StackLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
     }
 
+    StackAdapter adapter;
 
+
+    public void setAdapter(StackAdapter adapter) {
+        if (this.adapter != null) {
+            this.adapter.removeDataChangeListener(dataChangeListener);
+        }
+        this.adapter = adapter;
+        if (this.adapter != null) {
+            this.adapter.addDataChangeListener(dataChangeListener);
+        }
+    }
+
+    private int showIndex = 0;
+    private int endIndex = 0;
+    private TRSAction dataChangeListener = new TRSAction() {
+        @Override
+        public void call() {
+            removeAllViews();
+            showIndex = 0;
+            fillViews();
+        }
+    };
+
+    private void fillViews() {
+        int visibleCount = adapter.getVisibleCount();
+        int count = adapter.getCount();
+        endIndex = Math.min(count, showIndex + visibleCount);
+        for (int i = 0; i < endIndex; i++) {
+            addViewByPosition(i,false);
+        }
+
+    }
+
+    private void addViewByPosition(int position,boolean addEnd) {
+        if(position>=adapter.getCount()){
+            return;
+        }
+        View view = null;
+        if (removeViews.size() > 0) {
+            view = removeViews.remove(0);
+            view.setVisibility(VISIBLE);
+            view.setTranslationY(0);
+            view.setTranslationX(0);
+            view.setTranslationZ(0);
+            view.setScaleX(1.0f);
+            view.setScaleY(1.0f);
+            view.setAlpha(1.0f);
+        } else {
+            view = adapter.createView(this);
+        }
+        adapter.bindDataToView(view, position);
+       /* if(addEnd){
+            addView(view);
+        }else {
+            addView(view, 0);
+        }*/
+        addView(view,0);
+    }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
@@ -42,14 +105,12 @@ public class StackLayout extends FrameLayout {
         super.onSizeChanged(w, h, oldw, oldh);
         onItemTouchListener = new ItemTouchListener(getContext(), getWidth(), getHeight(), v -> {
             removeView(v);
+            removeViews.add(v);
+            endIndex++;
+            addViewByPosition(endIndex,true);
             setLayoutParamsForChild();
             return null;
-        }, new TRSFunction4<MotionEvent, MotionEvent, Float, Float, Void>() {
-            @Override
-            public Void call(MotionEvent motionEvent, MotionEvent motionEvent2, Float aFloat, Float aFloat2) {
-                return null;
-            }
-        });
+        }, (motionEvent, motionEvent2, aFloat, aFloat2) -> null);
     }
 
     @Override
